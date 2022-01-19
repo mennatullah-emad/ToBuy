@@ -4,9 +4,9 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import com.example.tobuy.model.ItemEntity
+import com.example.tobuy.intity.ItemEntity
 
-@Dao
+@Dao  //data access object
 interface ItemEntityDao {
 
     @Query("SELECT * FROM item_entity")
