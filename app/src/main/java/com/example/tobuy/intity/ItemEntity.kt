@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "item_entity")
 data class ItemEntity(
-    @PrimaryKey var d: String = "",
+    @PrimaryKey var id: String = "",
     var title: String = "",
     var description: String? = null,
     var priority: Int = 0,

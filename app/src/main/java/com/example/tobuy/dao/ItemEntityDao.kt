@@ -10,7 +10,7 @@ import com.example.tobuy.intity.ItemEntity
 interface ItemEntityDao {
 
     @Query("SELECT * FROM item_entity")
-    fun getAllItemEntities(): List<ItemEntity>
+    suspend fun getAllItemEntities(): List<ItemEntity>
 
     @Insert
     fun insert(itemEntity: ItemEntity)
