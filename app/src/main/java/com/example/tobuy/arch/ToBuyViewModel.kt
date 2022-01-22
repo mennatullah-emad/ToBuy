@@ -19,14 +19,18 @@ class ToBuyViewModel: ViewModel() {
         viewModelScope.launch {
             val items = repository.getAllItems()
             itemEntitiesLiveData.postValue(items)
-        }
+         }
     }
 
     fun insertItem(itemEntity: ItemEntity) {
-        repository.insertItem(itemEntity)
+        viewModelScope.launch {
+            repository.insertItem(itemEntity)
+        }
     }
 
     fun deleteItem(itemEntity: ItemEntity) {
-        repository.deleteItem(itemEntity)
+        viewModelScope.launch {
+            repository.deleteItem(itemEntity)
+        }
     }
 }

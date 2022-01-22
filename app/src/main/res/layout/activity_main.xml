@@ -19,4 +19,12 @@
         app:defaultNavHost="true"
         app:navGraph="@navigation/nav_graph"/>
 
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        style="@style/Widget.MaterialComponents.BottomNavigationView.Colored"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:menu="@menu/menu_bottom_app_bar" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

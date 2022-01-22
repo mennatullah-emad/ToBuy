@@ -6,6 +6,7 @@ import com.airbnb.epoxy.EpoxyController
 import com.example.tobuy.R
 import com.example.tobuy.databinding.ModelItemEntityBinding
 import com.example.tobuy.intity.ItemEntity
+import com.example.tobuy.ui.epoxy.LoadingEpoxyModel
 import com.example.tobuy.ui.epoxy.ViewBindingKotlinModel
 
 class HomeEpoxyController(private val itemEntityInterface: ItemEntityInterface) : EpoxyController() {
@@ -26,7 +27,7 @@ class HomeEpoxyController(private val itemEntityInterface: ItemEntityInterface) 
 
     override fun buildModels() {
         if (isLoading) {
-            //todo loading state
+            LoadingEpoxyModel().id("loading_state").addTo(this)
             return
         }
 
@@ -62,6 +63,13 @@ class HomeEpoxyController(private val itemEntityInterface: ItemEntityInterface) 
                 itemEntityInterface.onBumpPriority(itemEntity)
             }
 
+            val color = when (itemEntity.priority) {
+                1 -> android.R.color.holo_green_dark
+                2 -> android.R.color.holo_orange_dark
+                3 -> android.R.color.holo_red_dark
+                else -> R.color.purple_700
+            }
+            priorityTv.setBackgroundColor(color)
         }
     }
 
