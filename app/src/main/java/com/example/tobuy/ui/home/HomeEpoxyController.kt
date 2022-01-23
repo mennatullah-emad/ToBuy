@@ -9,7 +9,8 @@ import com.example.tobuy.intity.ItemEntity
 import com.example.tobuy.ui.epoxy.LoadingEpoxyModel
 import com.example.tobuy.ui.epoxy.ViewBindingKotlinModel
 
-class HomeEpoxyController(private val itemEntityInterface: ItemEntityInterface) : EpoxyController() {
+class HomeEpoxyController(private val itemEntityInterface: ItemEntityInterface) :
+    EpoxyController() {
     var isLoading: Boolean = true
         set(value) {
             field = value
@@ -42,7 +43,8 @@ class HomeEpoxyController(private val itemEntityInterface: ItemEntityInterface) 
     }
 
     data class ItemEntityEpoxyModel(
-        val itemEntity: ItemEntity, val itemEntityInterface: ItemEntityInterface) :
+        val itemEntity: ItemEntity, val itemEntityInterface: ItemEntityInterface
+    ) :
         ViewBindingKotlinModel<ModelItemEntityBinding>(R.layout.model_item_entity) {
 
         override fun ModelItemEntityBinding.bind() {
@@ -53,10 +55,6 @@ class HomeEpoxyController(private val itemEntityInterface: ItemEntityInterface) 
             } else {
                 descriptionTv.isVisible = true
                 descriptionTv.text = itemEntity.description
-            }
-
-            deleteImg.setOnClickListener {
-                itemEntityInterface.onDeleteItemEntity(itemEntity)
             }
 
             priorityTv.setOnClickListener {
