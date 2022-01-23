@@ -4,9 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.example.tobuy.R
-import com.example.tobuy.R2
-import com.example.tobuy.R2.attr.title
 import com.example.tobuy.databinding.FragmentAddItemEntityBinding
 import com.example.tobuy.intity.ItemEntity
 import com.example.tobuy.ui.BaseFragment
@@ -28,6 +27,27 @@ class AddItemEntityFragment : BaseFragment() {
         binding.saveBtn.setOnClickListener {
             saveItemEntityToDatabase()
         }
+
+        sharedViewModel.transactionCompleteLiveData.observe(viewLifecycleOwner){ complete->
+            if (complete){
+                Toast.makeText(requireActivity(), "Item saved!", Toast.LENGTH_SHORT).show()
+                binding.titleEt.text = null
+                binding.titleEt.requestFocus()
+
+                mainActivity.showKeyboard()
+
+                binding.descriptionEt.text = null
+                binding.radioGroup.check(R.id.radioButtonLow)
+            }
+        }
+        // show keyboard and default select title et
+        mainActivity.showKeyboard()
+        binding.titleEt.requestFocus()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        sharedViewModel.transactionCompleteLiveData.postValue(false)
     }
 
     private fun saveItemEntityToDatabase() {

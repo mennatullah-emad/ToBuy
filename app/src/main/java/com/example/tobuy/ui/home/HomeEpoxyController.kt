@@ -1,15 +1,19 @@
 package com.example.tobuy.ui.home
 
+import android.content.res.ColorStateList
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import com.airbnb.epoxy.EpoxyController
 import com.example.tobuy.R
+import com.example.tobuy.databinding.ModelEmptyStateBinding
+import com.example.tobuy.databinding.ModelHeaderItemBinding
 import com.example.tobuy.databinding.ModelItemEntityBinding
 import com.example.tobuy.intity.ItemEntity
 import com.example.tobuy.ui.epoxy.LoadingEpoxyModel
 import com.example.tobuy.ui.epoxy.ViewBindingKotlinModel
 
 class HomeEpoxyController(private val itemEntityInterface: ItemEntityInterface) : EpoxyController() {
+
     var isLoading: Boolean = true
         set(value) {
             field = value
@@ -32,12 +36,26 @@ class HomeEpoxyController(private val itemEntityInterface: ItemEntityInterface) 
         }
 
         if (itemEntityList.isEmpty()) {
-            //todo empty state
+            EmptyStateEpoxyModel().id("empty_state").addTo(this)
             return
         }
 
-        itemEntityList.forEach { item ->
+        var currentPriority: Int = -1
+        itemEntityList.sortedByDescending {it.priority}.forEach { item ->
+            if (item.priority != currentPriority){
+                currentPriority = item.priority
+                val text = getHeaderTextForPriority(currentPriority)
+                HeaderEpoxyModel(text).id(text).addTo(this)
+            }
             ItemEntityEpoxyModel(item, itemEntityInterface).id(item.id).addTo(this)
+        }
+    }
+
+    private fun getHeaderTextForPriority(priority: Int): String {
+        return when (priority){
+            1-> "Low"
+            2-> "Medium"
+            else -> "High"
         }
     }
 
@@ -55,10 +73,6 @@ class HomeEpoxyController(private val itemEntityInterface: ItemEntityInterface) 
                 descriptionTv.text = itemEntity.description
             }
 
-            deleteImg.setOnClickListener {
-                itemEntityInterface.onDeleteItemEntity(itemEntity)
-            }
-
             priorityTv.setOnClickListener {
                 itemEntityInterface.onBumpPriority(itemEntity)
             }
@@ -67,10 +81,25 @@ class HomeEpoxyController(private val itemEntityInterface: ItemEntityInterface) 
                 1 -> android.R.color.holo_green_dark
                 2 -> android.R.color.holo_orange_dark
                 3 -> android.R.color.holo_red_dark
-                else -> R.color.purple_700
+                else -> R.color.gray_700
             }
             priorityTv.setBackgroundColor(color)
+            //root.setStrokeColor(ColorStateList.valueOf(color))
         }
+    }
+
+    class EmptyStateEpoxyModel : ViewBindingKotlinModel<ModelEmptyStateBinding>(R.layout.model_empty_state) {
+        override fun ModelEmptyStateBinding.bind() {
+            // Nothing to do at the moment
+        }
+    }
+
+    data class HeaderEpoxyModel(val headerText: String):
+        ViewBindingKotlinModel<ModelHeaderItemBinding>(R.layout.model_header_item){
+        override fun ModelHeaderItemBinding.bind() {
+            headerTv.text = headerText
+        }
+
     }
 
 }

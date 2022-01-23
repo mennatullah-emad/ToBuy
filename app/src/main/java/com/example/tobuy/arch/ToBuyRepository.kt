@@ -2,6 +2,7 @@ package com.example.tobuy.arch
 
 import com.example.tobuy.AppDatabase
 import com.example.tobuy.intity.ItemEntity
+import kotlinx.coroutines.flow.Flow
 
 class ToBuyRepository(private val appDatabase: AppDatabase) {
 
@@ -13,7 +14,11 @@ class ToBuyRepository(private val appDatabase: AppDatabase) {
         appDatabase.itemEntityDao().delete(itemEntity)
     }
 
-    suspend fun getAllItems(): List<ItemEntity> {
+    suspend fun updateItem(itemEntity: ItemEntity) {
+        appDatabase.itemEntityDao().update(itemEntity)
+    }
+
+    fun getAllItems(): Flow<List<ItemEntity>> {
         return appDatabase.itemEntityDao().getAllItemEntities()
     }
 }

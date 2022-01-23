@@ -4,6 +4,6 @@ import com.example.tobuy.intity.ItemEntity
 
 interface ItemEntityInterface {
     fun onBumpPriority(itemEntity: ItemEntity)
-    fun onDeleteItemEntity(itemEntity: ItemEntity)
+
     //fun onItemSelected(itemEntity: ItemEntity)
 }
