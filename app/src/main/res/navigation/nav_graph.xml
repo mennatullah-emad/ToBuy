@@ -7,9 +7,10 @@
 
     <fragment
         android:id="@+id/homeFragment"
-        android:label="Home"
         android:name="com.example.tobuy.ui.home.HomeFragment"
+        android:label="Home"
         tools:layout="@layout/fragment_home">
+
         <action
             android:id="@+id/action_homeFragment_to_addItemEntityFragment"
             app:destination="@id/addItemEntityFragment" />
@@ -20,11 +21,13 @@
         android:name="com.example.tobuy.ui.add.AddItemEntityFragment"
         android:label="Add Item"
         tools:layout="@layout/fragment_add_item_entity">
+
         <argument
             android:name="selectedItemEntityId"
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
+
     </fragment>
 
 </navigation>

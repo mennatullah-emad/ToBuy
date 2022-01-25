@@ -41,7 +41,7 @@ class ToBuyViewModel: ViewModel() {
     fun updateItem(itemEntity: ItemEntity) {
         viewModelScope.launch {
             repository.updateItem(itemEntity)
-            //transactionCompleteLiveData.postValue(Event(true))
+            transactionCompleteLiveData.postValue(true)
         }
     }
 }

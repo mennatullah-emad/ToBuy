@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.navigation.fragment.navArgs
 import com.example.tobuy.R
 import com.example.tobuy.databinding.FragmentAddItemEntityBinding
 import com.example.tobuy.intity.ItemEntity
@@ -15,6 +16,14 @@ class AddItemEntityFragment : BaseFragment() {
 
     private var _binding: FragmentAddItemEntityBinding? = null
     private val binding get() = _binding!!
+
+    private val safeArgs: AddItemEntityFragmentArgs by navArgs()
+    private val selectedItemEntity: ItemEntity? by lazy {
+        sharedViewModel.itemEntitiesLiveData.value?.find {
+            it.id == safeArgs.selectedItemEntityId
+        }
+    }
+    private var isInEditMode: Boolean = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentAddItemEntityBinding.inflate(inflater, container, false)
@@ -30,6 +39,12 @@ class AddItemEntityFragment : BaseFragment() {
 
         sharedViewModel.transactionCompleteLiveData.observe(viewLifecycleOwner){ complete->
             if (complete){
+
+                if (isInEditMode){
+                    navigateUp()
+                    return@observe
+                }
+
                 Toast.makeText(requireActivity(), "Item saved!", Toast.LENGTH_SHORT).show()
                 binding.titleEt.text = null
                 binding.titleEt.requestFocus()
@@ -43,6 +58,20 @@ class AddItemEntityFragment : BaseFragment() {
         // show keyboard and default select title et
         mainActivity.showKeyboard()
         binding.titleEt.requestFocus()
+
+        //setup screen if we are in edit mode
+        selectedItemEntity?.let {itemEntity->
+            isInEditMode = true
+            binding.titleEt.setText(itemEntity.title)
+            binding.descriptionEt.setText(itemEntity.description)
+            when (itemEntity.priority) {
+                1 -> binding.radioGroup.check(R.id.radioButtonLow)
+                2 -> binding.radioGroup.check(R.id.radioButtonMedium)
+                else -> binding.radioGroup.check(R.id.radioButtonHigh)
+            }
+            binding.saveBtn.text = "Update"
+            mainActivity.supportActionBar?.title = "Update item"
+        }
     }
 
     override fun onPause() {
@@ -59,15 +88,22 @@ class AddItemEntityFragment : BaseFragment() {
         binding.titleTextField.error = null
 
         var itemDescription: String? = binding.descriptionEt.text.toString().trim()
-        if (itemDescription?.isEmpty() == true) {
-            itemDescription = null
-        }
-
         val itemPriority = when (binding.radioGroup.checkedRadioButtonId) {
             R.id.radioButtonLow -> 1
             R.id.radioButtonMedium -> 2
             R.id.radioButtonHigh -> 3
             else -> 0
+        }
+
+        if (isInEditMode) {
+            val itemEntity = selectedItemEntity!!.copy(
+                title = itemTitle,
+                description = itemDescription,
+                priority = itemPriority,
+            )
+
+            sharedViewModel.updateItem(itemEntity)
+            return
         }
 
         val itemEntity = ItemEntity(

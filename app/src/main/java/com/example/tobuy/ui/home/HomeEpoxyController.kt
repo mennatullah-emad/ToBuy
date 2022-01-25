@@ -85,6 +85,9 @@ class HomeEpoxyController(private val itemEntityInterface: ItemEntityInterface) 
             }
             priorityTv.setBackgroundColor(color)
             //root.setStrokeColor(ColorStateList.valueOf(color))
+            root.setOnClickListener{
+                itemEntityInterface.onItemSelected(itemEntity)
+            }
         }
     }
 
