@@ -25,6 +25,9 @@ class ToBuyRepository(private val appDatabase: AppDatabase) {
         return appDatabase.itemEntityDao().getAllItemEntities()
     }
 
+    fun getAllItemWithCategoryEntities(): Flow<List<ItemWithCategoryEntity>> {
+        return appDatabase.itemEntityDao().getAllItemWithCategoryEntities()
+    }
     // endregion ItemEntity
 
     // region CategoryEntity

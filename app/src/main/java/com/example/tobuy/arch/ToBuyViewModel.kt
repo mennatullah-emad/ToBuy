@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.tobuy.AppDatabase
 import com.example.tobuy.intity.CategoryEntity
 import com.example.tobuy.intity.ItemEntity
+import com.example.tobuy.intity.ItemWithCategoryEntity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -14,6 +15,7 @@ class ToBuyViewModel: ViewModel() {
     private lateinit var repository:ToBuyRepository
 
     val itemEntitiesLiveData = MutableLiveData<List<ItemEntity>>()
+    val itemWithCategoryEntitiesLiveData = MutableLiveData<List<ItemWithCategoryEntity>>()
     val categoryEntitiesLiveData = MutableLiveData<List<CategoryEntity>>()
 
     val transactionCompleteLiveData = MutableLiveData<Event<Boolean>>()
@@ -31,6 +33,12 @@ class ToBuyViewModel: ViewModel() {
          viewModelScope.launch {
              repository.getAllCategories().collect {categories->
                  categoryEntitiesLiveData.postValue(categories)
+             }
+         }
+
+         viewModelScope.launch {
+             repository.getAllItemWithCategoryEntities().collect {items->
+                 itemWithCategoryEntitiesLiveData.postValue(items)
              }
          }
     }

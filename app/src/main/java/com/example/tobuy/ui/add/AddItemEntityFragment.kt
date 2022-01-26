@@ -20,10 +20,11 @@ class AddItemEntityFragment : BaseFragment() {
 
     private val safeArgs: AddItemEntityFragmentArgs by navArgs()
     private val selectedItemEntity: ItemEntity? by lazy {
-        sharedViewModel.itemEntitiesLiveData.value?.find {
-            it.id == safeArgs.selectedItemEntityId
-        }
+        sharedViewModel.itemWithCategoryEntitiesLiveData.value?.find {
+            it.itemEntity.id == safeArgs.selectedItemEntityId
+        }?.itemEntity
     }
+
     private var isInEditMode: Boolean = false
 
     override fun onCreateView(
