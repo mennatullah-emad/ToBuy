@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SeekBar
 import android.widget.Toast
 import androidx.navigation.fragment.navArgs
 import com.example.tobuy.R
@@ -25,7 +26,11 @@ class AddItemEntityFragment : BaseFragment() {
     }
     private var isInEditMode: Boolean = false
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         _binding = FragmentAddItemEntityBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -37,10 +42,38 @@ class AddItemEntityFragment : BaseFragment() {
             saveItemEntityToDatabase()
         }
 
-        sharedViewModel.transactionCompleteLiveData.observe(viewLifecycleOwner){ complete->
-            if (complete){
+        binding.quantitySb.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                val currentText = binding.titleEt.text.toString().trim()
+                if (currentText.isEmpty()) {
+                    return
+                }
+                val startIndex = currentText.indexOf("[") - 1
+                val newText = if (startIndex > 0) {
+                    "${currentText.substring(0, startIndex)} [$progress]"
+                } else {
+                    "$currentText [$progress]"
+                }
 
-                if (isInEditMode){
+                val sanitizedText = newText.replace("[1]", "")
+                binding.titleEt.setText(sanitizedText)
+                binding.titleEt.setSelection(sanitizedText.length)
+            }
+
+            override fun onStartTrackingTouch(p0: SeekBar?) {
+                //nothing to do
+            }
+
+            override fun onStopTrackingTouch(p0: SeekBar?) {
+                //nothing to do
+            }
+
+        })
+
+        sharedViewModel.transactionCompleteLiveData.observe(viewLifecycleOwner) { complete ->
+            if (complete) {
+
+                if (isInEditMode) {
                     navigateUp()
                     return@observe
                 }
@@ -60,7 +93,7 @@ class AddItemEntityFragment : BaseFragment() {
         binding.titleEt.requestFocus()
 
         //setup screen if we are in edit mode
-        selectedItemEntity?.let {itemEntity->
+        selectedItemEntity?.let { itemEntity ->
             isInEditMode = true
             binding.titleEt.setText(itemEntity.title)
             binding.descriptionEt.setText(itemEntity.description)
@@ -71,6 +104,18 @@ class AddItemEntityFragment : BaseFragment() {
             }
             binding.saveBtn.text = "Update"
             mainActivity.supportActionBar?.title = "Update item"
+
+            if (itemEntity.title.contains("[")) {
+                val startIndex = itemEntity.title.indexOf("[") + 1
+                val endIndex = itemEntity.title.indexOf("]")
+
+                try {
+                    val progress = itemEntity.title.substring(startIndex, endIndex).toInt()
+                    binding.quantitySb.progress = progress
+                } catch (e: Exception) {
+                    // Whoops
+                }
+            }
         }
     }
 

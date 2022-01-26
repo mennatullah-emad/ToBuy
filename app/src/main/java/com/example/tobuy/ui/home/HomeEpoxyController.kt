@@ -1,5 +1,6 @@
 package com.example.tobuy.ui.home
 
+import addHeaderModel
 import android.content.res.ColorStateList
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
@@ -11,6 +12,7 @@ import com.example.tobuy.databinding.ModelItemEntityBinding
 import com.example.tobuy.intity.ItemEntity
 import com.example.tobuy.ui.epoxy.LoadingEpoxyModel
 import com.example.tobuy.ui.epoxy.ViewBindingKotlinModel
+import com.example.tobuy.ui.epoxy.models.HeaderEpoxyModel
 
 class HomeEpoxyController(private val itemEntityInterface: ItemEntityInterface) : EpoxyController() {
 
@@ -44,8 +46,7 @@ class HomeEpoxyController(private val itemEntityInterface: ItemEntityInterface) 
         itemEntityList.sortedByDescending {it.priority}.forEach { item ->
             if (item.priority != currentPriority){
                 currentPriority = item.priority
-                val text = getHeaderTextForPriority(currentPriority)
-                HeaderEpoxyModel(text).id(text).addTo(this)
+                addHeaderModel(getHeaderTextForPriority(currentPriority))
             }
             ItemEntityEpoxyModel(item, itemEntityInterface).id(item.id).addTo(this)
         }
@@ -95,14 +96,6 @@ class HomeEpoxyController(private val itemEntityInterface: ItemEntityInterface) 
         override fun ModelEmptyStateBinding.bind() {
             // Nothing to do at the moment
         }
-    }
-
-    data class HeaderEpoxyModel(val headerText: String):
-        ViewBindingKotlinModel<ModelHeaderItemBinding>(R.layout.model_header_item){
-        override fun ModelHeaderItemBinding.bind() {
-            headerTv.text = headerText
-        }
-
     }
 
 }
