@@ -70,9 +70,8 @@ class AddItemEntityFragment : BaseFragment() {
 
         })
 
-        sharedViewModel.transactionCompleteLiveData.observe(viewLifecycleOwner) { complete ->
-            if (complete) {
-
+        sharedViewModel.transactionCompleteLiveData.observe(viewLifecycleOwner) { event ->
+            event.getContent()?.let {
                 if (isInEditMode) {
                     navigateUp()
                     return@observe
@@ -117,11 +116,6 @@ class AddItemEntityFragment : BaseFragment() {
                 }
             }
         }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        sharedViewModel.transactionCompleteLiveData.postValue(false)
     }
 
     private fun saveItemEntityToDatabase() {

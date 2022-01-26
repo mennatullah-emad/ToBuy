@@ -9,7 +9,7 @@ import com.example.tobuy.intity.CategoryEntity
 import com.example.tobuy.ui.BaseFragment
 import java.util.*
 
-class AddCategoryFragment: BaseFragment() {
+class AddCategoryFragment : BaseFragment() {
 
     private var _binding: FragmentAddCategoryBinding? = null
     private val binding get() = _binding!!
@@ -32,16 +32,11 @@ class AddCategoryFragment: BaseFragment() {
             saveCategoryToDatabase()
         }
 
-        sharedViewModel.transactionCompleteLiveData.observe(viewLifecycleOwner) { completed ->
-            if (completed) {
+        sharedViewModel.transactionCompleteLiveData.observe(viewLifecycleOwner) { event ->
+            event.getContent()?.let {
                 navigateUp()
             }
         }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        sharedViewModel.transactionCompleteLiveData.postValue(false)
     }
 
     private fun saveCategoryToDatabase() {
