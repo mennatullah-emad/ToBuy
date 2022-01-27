@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.navigation.fragment.navArgs
 import com.example.tobuy.R
 import com.example.tobuy.databinding.FragmentAddItemEntityBinding
+import com.example.tobuy.intity.CategoryEntity
 import com.example.tobuy.intity.ItemEntity
 import com.example.tobuy.ui.BaseFragment
 import java.util.*
@@ -27,11 +28,7 @@ class AddItemEntityFragment : BaseFragment() {
 
     private var isInEditMode: Boolean = false
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentAddItemEntityBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -82,15 +79,11 @@ class AddItemEntityFragment : BaseFragment() {
                 binding.titleEt.text = null
                 binding.titleEt.requestFocus()
 
-                mainActivity.showKeyboard()
-
                 binding.descriptionEt.text = null
                 binding.radioGroup.check(R.id.radioButtonLow)
+                binding.quantitySb.progress = 1
             }
         }
-        // show keyboard and default select title et
-        mainActivity.showKeyboard()
-        binding.titleEt.requestFocus()
 
         //setup screen if we are in edit mode
         selectedItemEntity?.let { itemEntity ->
@@ -117,6 +110,16 @@ class AddItemEntityFragment : BaseFragment() {
                 }
             }
         }
+
+        val categoryViewStateEpoxyController = CategoryViewStateEpoxyController { categoryId ->
+            sharedViewModel.onCategorySelected(categoryId)
+        }
+        binding.categoriesEpoxyRecyclerView.setController(categoryViewStateEpoxyController)
+        sharedViewModel.onCategorySelected(selectedItemEntity?.categoryId ?: CategoryEntity.DEFAULT_CATEGORY_ID, true)
+        sharedViewModel.categoriesViewStateLiveData.observe(viewLifecycleOwner) { viewState ->
+            categoryViewStateEpoxyController.viewState = viewState
+        }
+
     }
 
     private fun saveItemEntityToDatabase() {
@@ -128,6 +131,9 @@ class AddItemEntityFragment : BaseFragment() {
         binding.titleTextField.error = null
 
         var itemDescription: String? = binding.descriptionEt.text.toString().trim()
+        if (itemDescription?.isEmpty() == true) {
+            itemDescription = null
+        }
         val itemPriority = when (binding.radioGroup.checkedRadioButtonId) {
             R.id.radioButtonLow -> 1
             R.id.radioButtonMedium -> 2
@@ -135,11 +141,14 @@ class AddItemEntityFragment : BaseFragment() {
             else -> 0
         }
 
+        val itemCategoryId = sharedViewModel.categoriesViewStateLiveData.value?.getSelectedCategoryId() ?: return
+
         if (isInEditMode) {
             val itemEntity = selectedItemEntity!!.copy(
                 title = itemTitle,
                 description = itemDescription,
                 priority = itemPriority,
+                categoryId = itemCategoryId
             )
 
             sharedViewModel.updateItem(itemEntity)
@@ -152,7 +161,7 @@ class AddItemEntityFragment : BaseFragment() {
             description = itemDescription,
             priority = itemPriority,
             createdAt = System.currentTimeMillis(),
-            categoryId = "" //todo update this later when we have categories in the app
+            categoryId = itemCategoryId
         )
 
         sharedViewModel.insertItem(itemEntity)

@@ -18,6 +18,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.tobuy.AppDatabase
 import com.example.tobuy.R
+import com.example.tobuy.SharedPrefUtil
 import com.example.tobuy.arch.ToBuyViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -26,14 +27,11 @@ class MainActivity : AppCompatActivity() {
     lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
 
-    private val appDatabase: RoomDatabase by lazy {
-        Room.databaseBuilder(
-            this, AppDatabase::class.java, "").build()
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        SharedPrefUtil.init(this)
 
         val viewModel: ToBuyViewModel by viewModels()
         viewModel.init(AppDatabase.getDatabase(this))

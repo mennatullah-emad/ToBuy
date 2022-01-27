@@ -1,5 +1,6 @@
 package com.example.tobuy.arch
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,6 +21,21 @@ class ToBuyViewModel: ViewModel() {
 
     val transactionCompleteLiveData = MutableLiveData<Event<Boolean>>()
 
+    // Home page
+    var currentSort: HomeViewState.Sort = HomeViewState.Sort.NONE
+        set(value) {
+            field = value
+            updateHomeViewState(itemWithCategoryEntitiesLiveData.value!!)
+        }
+    private val _homeViewStateLiveData = MutableLiveData<HomeViewState>()
+    val homeViewStateLiveData: LiveData<HomeViewState>
+        get() = _homeViewStateLiveData
+
+    // Categories in the Add/Update screen
+    private val _categoriesViewStateLiveData = MutableLiveData<CategoriesViewState>()
+    val categoriesViewStateLiveData: LiveData<CategoriesViewState>
+        get() = _categoriesViewStateLiveData
+
      fun init(appDatabase: AppDatabase){
         repository = ToBuyRepository(appDatabase)
 
@@ -39,9 +55,143 @@ class ToBuyViewModel: ViewModel() {
          viewModelScope.launch {
              repository.getAllItemWithCategoryEntities().collect {items->
                  itemWithCategoryEntitiesLiveData.postValue(items)
+
+                 updateHomeViewState(items)
              }
          }
     }
+
+    private fun updateHomeViewState(items: List<ItemWithCategoryEntity>) {
+        val dataList = ArrayList<HomeViewState.DataItem<*>>()
+        when (currentSort) {
+            HomeViewState.Sort.NONE -> {
+                var currentPriority: Int = -1
+                items.sortedByDescending {
+                    it.itemEntity.priority
+                }.forEach { item ->
+                    if (item.itemEntity.priority != currentPriority) {
+                        currentPriority = item.itemEntity.priority
+                        val headerItem = HomeViewState.DataItem(
+                            data = getHeaderTextForPriority(currentPriority),
+                            isHeader = true
+                        )
+                        dataList.add(headerItem)
+                    }
+
+                    val dataItem = HomeViewState.DataItem(data = item)
+                    dataList.add(dataItem)
+                }
+            }
+            HomeViewState.Sort.CATEGORY -> {
+                var currentCategoryId = "no_id"
+                items.sortedBy {
+                    it.categoryEntity?.name ?: CategoryEntity.DEFAULT_CATEGORY_ID
+                }.forEach { item ->
+                    if (item.itemEntity.categoryId != currentCategoryId) {
+                        currentCategoryId = item.itemEntity.categoryId
+                        val headerItem = HomeViewState.DataItem(
+                            data = item.categoryEntity?.name ?: CategoryEntity.DEFAULT_CATEGORY_ID,
+                            isHeader = true
+                        )
+                        dataList.add(headerItem)
+                    }
+
+                    val dataItem = HomeViewState.DataItem(data = item)
+                    dataList.add(dataItem)
+                }
+            }
+            HomeViewState.Sort.OLDEST -> { val headerItem = HomeViewState.DataItem(data = "Oldest", isHeader = true)
+                dataList.add(headerItem)
+
+                items.sortedBy { it.itemEntity.createdAt }.forEach {
+                    val dataItem = HomeViewState.DataItem(data = it)
+                    dataList.add(dataItem)
+                }
+            }
+            HomeViewState.Sort.NEWEST -> { val headerItem = HomeViewState.DataItem(data = "Newest", isHeader = true)
+                dataList.add(headerItem)
+
+                items.sortedByDescending { it.itemEntity.createdAt }.forEach {
+                    val dataItem = HomeViewState.DataItem(data = it)
+                    dataList.add(dataItem)
+                }
+            }
+        }
+
+        _homeViewStateLiveData.postValue(
+            HomeViewState(
+                dataList = dataList,
+                isLoading = false,
+                sort = currentSort
+            )
+        )
+    }
+
+    private fun getHeaderTextForPriority(priority: Int): String {
+        return when (priority) {
+            1 -> "Low"
+            2 -> "Medium"
+            else -> "High"
+        }
+    }
+
+    data class HomeViewState(
+        val dataList: List<DataItem<*>> = emptyList(),
+        val isLoading: Boolean = false,
+        val sort: Sort = Sort.NONE
+    ) { data class DataItem<T>(val data: T, val isHeader: Boolean = false)
+        enum class Sort(val displayName: String) {
+            NONE("None"),
+            CATEGORY("Category"),
+            OLDEST("Oldest"),
+            NEWEST("Newest")
+        }
+    }
+
+    // region Category
+    fun onCategorySelected(categoryId: String, showLoading: Boolean = false) {
+        if (showLoading) {
+            val loadingViewState = CategoriesViewState(isLoading = true)
+            _categoriesViewStateLiveData.value = loadingViewState
+        }
+
+        val categories = categoryEntitiesLiveData.value ?: return
+        val viewStateItemList = ArrayList<CategoriesViewState.Item>()
+
+        // Default category (un-selecting a category)
+        viewStateItemList.add(
+            CategoriesViewState.Item(
+                categoryEntity = CategoryEntity.getDefaultCategory(),
+                isSelected = categoryId == CategoryEntity.DEFAULT_CATEGORY_ID
+            )
+        )
+
+        // Populate the rest of the list with what we have in the DB
+        categories.forEach {
+            viewStateItemList.add(
+                CategoriesViewState.Item(
+                    categoryEntity = it,
+                    isSelected = it.id == categoryId
+                )
+            )
+        }
+
+        val viewState = CategoriesViewState(itemList = viewStateItemList)
+        _categoriesViewStateLiveData.postValue(viewState)
+    }
+
+    data class CategoriesViewState(val isLoading: Boolean = false, val itemList: List<Item> = emptyList()) {
+        data class Item(
+            val categoryEntity: CategoryEntity = CategoryEntity(),
+            val isSelected: Boolean = false
+        )
+
+        fun getSelectedCategoryId(): String {
+            return itemList.find { it.isSelected }?.categoryEntity?.id
+                ?: CategoryEntity.DEFAULT_CATEGORY_ID
+        }
+    }
+    // endregion Category
 
     // region ItemEntity
     fun insertItem(itemEntity: ItemEntity) {

@@ -1,4 +1,4 @@
-package com.example.tobuy.ui.profile
+package com.example.tobuy.ui.customization
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,11 +14,7 @@ class AddCategoryFragment : BaseFragment() {
     private var _binding: FragmentAddCategoryBinding? = null
     private val binding get() = _binding!!
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentAddCategoryBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -26,8 +22,6 @@ class AddCategoryFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.categoryNameEditText.requestFocus()
-        mainActivity.showKeyboard()
         binding.saveButton.setOnClickListener {
             saveCategoryToDatabase()
         }

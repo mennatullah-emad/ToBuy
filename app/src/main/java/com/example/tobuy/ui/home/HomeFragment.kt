@@ -1,10 +1,8 @@
 package com.example.tobuy.ui.home
 
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import com.airbnb.epoxy.EpoxyTouchHelper
 import com.example.tobuy.R
 import com.example.tobuy.databinding.FragmentHomeBinding
@@ -17,6 +15,10 @@ class HomeFragment : BaseFragment(), ItemEntityInterface{
     // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
@@ -34,8 +36,8 @@ class HomeFragment : BaseFragment(), ItemEntityInterface{
         val controller = HomeEpoxyController(this)
         binding.epoxyRecyclerView.setControllerAndBuildModels(controller)
 
-        sharedViewModel.itemWithCategoryEntitiesLiveData.observe(viewLifecycleOwner) { items ->
-           controller.items = items
+        sharedViewModel.homeViewStateLiveData.observe(viewLifecycleOwner) { viewState ->
+            controller.viewState = viewState
         }
 
         // setup-swipe-to-delete
@@ -53,6 +55,19 @@ class HomeFragment : BaseFragment(), ItemEntityInterface{
                     sharedViewModel.deleteItem(itemThatWasRemoved.itemEntity)
                 }
             })
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_home_fragment, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return if (item.itemId == R.id.menuItemSort) {
+            SortOrderBottomSheetDialogFragment().show(childFragmentManager, null)
+            true
+        } else {
+            super.onOptionsItemSelected(item)
+        }
     }
 
     override fun onResume() {

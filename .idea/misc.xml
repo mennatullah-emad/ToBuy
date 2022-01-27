@@ -6,19 +6,27 @@
         <entry key="..\:/Android Projects/ToBuy/app/src/main/res/drawable-v24/ic_customization_24.xml" value="0.19166666666666668" />
         <entry key="..\:/Android Projects/ToBuy/app/src/main/res/drawable-v24/ic_home_24.xml" value="0.19166666666666668" />
         <entry key="..\:/Android Projects/ToBuy/app/src/main/res/drawable/ic_delete_24.xml" value="0.19166666666666668" />
-        <entry key="..\:/Android Projects/ToBuy/app/src/main/res/layout/activity_main.xml" value="0.17552083333333332" />
+        <entry key="..\:/Android Projects/ToBuy/app/src/main/res/drawable/ic_edit_24.xml" value="0.1685185185185185" />
+        <entry key="..\:/Android Projects/ToBuy/app/src/main/res/drawable/ic_sort_24.xml" value="0.18871794871794872" />
+        <entry key="..\:/Android Projects/ToBuy/app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="..\:/Android Projects/ToBuy/app/src/main/res/layout/bottom_sheet_sort_order.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/ToBuy/app/src/main/res/layout/epoxy_model_loading.xml" value="0.1875" />
         <entry key="..\:/Android Projects/ToBuy/app/src/main/res/layout/fragment_add_category.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/ToBuy/app/src/main/res/layout/fragment_add_item_entity.xml" value="0.1" />
+        <entry key="..\:/Android Projects/ToBuy/app/src/main/res/layout/fragment_custom_color_picker.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/ToBuy/app/src/main/res/layout/fragment_home.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/ToBuy/app/src/main/res/layout/fragment_profile.xml" value="0.17552083333333332" />
+        <entry key="..\:/Android Projects/ToBuy/app/src/main/res/layout/layout_color_picker_slider.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/ToBuy/app/src/main/res/layout/model_category.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/ToBuy/app/src/main/res/layout/model_category_item_selection.xml" value="0.17300724637681159" />
         <entry key="..\:/Android Projects/ToBuy/app/src/main/res/layout/model_empty_button.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/ToBuy/app/src/main/res/layout/model_empty_state.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/ToBuy/app/src/main/res/layout/model_header_item.xml" value="0.17552083333333332" />
-        <entry key="..\:/Android Projects/ToBuy/app/src/main/res/layout/model_item_entity.xml" value="0.16666666666666666" />
+        <entry key="..\:/Android Projects/ToBuy/app/src/main/res/layout/model_item_entity.xml" value="0.22" />
+        <entry key="..\:/Android Projects/ToBuy/app/src/main/res/layout/model_priority_color_item.xml" value="0.13903985507246377" />
+        <entry key="..\:/Android Projects/ToBuy/app/src/main/res/layout/model_sort_order_item.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/ToBuy/app/src/main/res/menu/menu_bottom_app_bar.xml" value="0.1875" />
+        <entry key="..\:/Android Projects/ToBuy/app/src/main/res/menu/menu_home_fragment.xml" value="0.17552083333333332" />
       </map>
     </option>
   </component>

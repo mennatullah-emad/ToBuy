@@ -28,4 +28,6 @@ abstract class BaseFragment : Fragment() {
         mainActivity.navController.navigate(navDirections)
     }
     // endregion Navigation helper methods.
+
+
 }
