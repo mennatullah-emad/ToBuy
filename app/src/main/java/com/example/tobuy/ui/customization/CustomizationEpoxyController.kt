@@ -1,8 +1,9 @@
 package com.example.tobuy.ui.customization
 
-import android.content.res.ColorStateList
+import android.app.AlertDialog
 import com.airbnb.epoxy.EpoxyController
 import com.example.tobuy.R
+import com.example.tobuy.SharedPrefUtil
 import com.example.tobuy.addHeaderModel
 import com.example.tobuy.databinding.ModelCategoryBinding
 import com.example.tobuy.databinding.ModelEmptyButtonBinding
@@ -24,7 +25,7 @@ class CustomizationEpoxyController(private val customizationInterface: Customiza
         addHeaderModel("Categories")
 
         categories.forEach {
-            CategoryEpoxyModel(it).id(it.id).addTo(this)
+            CategoryEpoxyModel(it, customizationInterface).id(it.id).addTo(this)
         }
 
         EmptyButtonEpoxyModel("Add Category", customizationInterface)
@@ -33,18 +34,47 @@ class CustomizationEpoxyController(private val customizationInterface: Customiza
 
         // Priority customization section
         addHeaderModel("Priorities")
-    }
 
+        val highPriorityColor = SharedPrefUtil.getHighPriorityColor()
+        val mediumPriorityColor = SharedPrefUtil.getMediumPriorityColor()
+        val lowPriorityColor = SharedPrefUtil.getLowPriorityColor()
+
+        PriorityColorItemEpoxyModel("High", highPriorityColor, customizationInterface)
+            .id("priority_high")
+            .addTo(this)
+        PriorityColorItemEpoxyModel("Medium", mediumPriorityColor, customizationInterface)
+            .id("priority_medium")
+            .addTo(this)
+        PriorityColorItemEpoxyModel("Low", lowPriorityColor, customizationInterface)
+            .id("priority_low")
+            .addTo(this)
+    }
     // region EpoxyModels
     data class CategoryEpoxyModel(
-        val categoryEntity: CategoryEntity
+        val categoryEntity: CategoryEntity,
+        val customizationInterface: CustomizationInterface
     ) : ViewBindingKotlinModel<ModelCategoryBinding>(R.layout.model_category) {
         override fun ModelCategoryBinding.bind() {
             textView.text = categoryEntity.name
+            root.setOnClickListener {
+                customizationInterface.onCategorySelected(categoryEntity)
+            }
+
+            root.setOnLongClickListener {
+                AlertDialog.Builder(it.context)
+                    .setTitle("Delete ${categoryEntity.name}?")
+                    .setPositiveButton("Yes") { _, _ ->
+                        customizationInterface.onDeleteCategory(categoryEntity)
+                    }
+                    .setNegativeButton("Cancel") { _, _ ->
+                    }
+                    .show()
+                return@setOnLongClickListener true
+            }
         }
     }
 
-    data class EmptyButtonEpoxyModel(
+        data class EmptyButtonEpoxyModel(
         val buttonText: String,
         val customizationInterface: CustomizationInterface
     ) : ViewBindingKotlinModel<ModelEmptyButtonBinding>(R.layout.model_empty_button) {

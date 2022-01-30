@@ -71,7 +71,7 @@ class HomeEpoxyController(private val itemEntityInterface: ItemEntityInterface) 
                 3 -> android.R.color.holo_red_dark
                 else -> R.color.gray_700
             }
-            priorityTv.setBackgroundColor(color)
+            priorityTv.setBackgroundResource(color)
             //root.setStrokeColor(ColorStateList.valueOf(color))
             root.setOnClickListener {
                 itemEntityInterface.onItemSelected(itemEntity.itemEntity)
